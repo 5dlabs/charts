@@ -1,0 +1,76 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  lint-and-package:
+    name: Lint, Package, and Release Helm Charts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Needed for actions/checkout and pushing to gh-pages
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for accurate git info
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.12.0
+
+      - name: Lint Helm Charts
+        run: |
+          for chart in $(find . -name "Chart.yaml" -exec dirname {} \;); do
+            echo "Linting $chart"
+            helm lint "$chart"
+          done
+
+      - name: Package Helm Charts
+        run: |
+          mkdir -p packaged
+          for chart in $(find . -name "Chart.yaml" -exec dirname {} \;); do
+            echo "Packaging $chart"
+            helm package "$chart" -d packaged
+          done
+
+      - name: Publish to gh-pages branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          REPO_OWNER: ${{ github.repository_owner }}
+        run: |
+          # Configure Git
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+          # Fetch gh-pages branch
+          git fetch origin gh-pages
+
+          # Create a worktree for gh-pages
+          git worktree add gh-pages-worktree gh-pages || git worktree add gh-pages-worktree
+
+          # Copy packaged charts into the gh-pages worktree
+          cp -R packaged/* gh-pages-worktree/
+
+          # Add CNAME file
+          echo "charts.bnc-tooling.com" > gh-pages-worktree/CNAME
+
+          # Change directory to the gh-pages worktree
+          cd gh-pages-worktree
+
+          # Update Helm repo index with custom domain URL
+          helm repo index . --url "https://charts.bnc-tooling.com/"
+
+          # Commit and push changes
+          git add .
+          git commit -m "Update Helm chart repository [skip ci]" || echo "No changes to commit"
+          git push origin gh-pages
+
+          # Clean up
+          cd ..
+          git worktree remove gh-pages-worktree --force
+

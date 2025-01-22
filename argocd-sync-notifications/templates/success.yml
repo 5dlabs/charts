@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: {{ .Values.appName }}-sync-succeed-notif
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      containers:
+      - name: slack-notification
+        image: {{ .Values.curlImage }}
+        env:
+        - name: BEARER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secretName }}
+              key: {{ .Values.secretKey }}
+        command:
+          - "sh"
+          - "-c"
+          - |
+            curl -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $BEARER_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "channel": "{{ .Values.slackChannel }}",
+              "text": ":argo: Argo CD sync succeeded for *{{ .Values.appName }}* :white_check_mark: :success:",
+              "username": "Argo bot",
+              "icon_emoji": ":argo:"
+            }'
+      restartPolicy: Never
+  backoffLimit: 2

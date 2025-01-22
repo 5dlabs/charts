@@ -1,0 +1,139 @@
+global:
+  # fullnameOverride: "mynode"
+  # nameOverride: "mynode"
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets:
+    - name: ghcr-login-secret
+  podSecurityContext:
+    fsGroup: 0
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroupChangePolicy: "OnRootMismatch"
+  containerSecurityContext: {}
+
+additionalManifests: []
+  # - apiVersion: v1
+  #   kind: Secret
+  #   metadata:
+  #     name: mysa.service-account-token
+  #     namespace: kube-system
+  #     annotations:
+  #       kubernetes.io/service-account.name: my-sa
+  #   type: kubernetes.io/service-account-token
+
+configMap:
+  enabled: false
+  dataElements: {}
+    # - key: key1
+    #   value: value1
+    #   fromFile: false
+    # - key: key2
+    #   value: scripts/something.sh
+    #   fromFile: true
+
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+  extraMetrics: []
+    # - type: Resource
+    #   resource:
+    #     name: memory
+    #     target:
+    #       type: Utilization
+    #       averageUtilization: 80
+
+ingress:
+  enabled: true
+  className: "" #"alb"
+  annotations: {}
+  hosts: #[]
+    - host: node.stage
+      paths: #[]
+        - path: /
+          backendPort: 80
+          pathType: ImplementationSpecific
+  tls:
+    enable: false
+    secretName: ""
+
+service:
+  type: ClusterIP
+  annotations: {}
+  sessionAffinity: ClientIP
+  ports: []
+
+serviceAccount:
+  create: false
+  name: ""
+  annotations: {}
+  automount: false
+
+vault:
+  enabled: false
+  app: ""
+  refreshAfter: 720h
+  rolloutRestartTargets: []
+    # - kind: StatefulSet
+    #   name: node
+
+statefulsets: []
+  # - name: mynode
+  #   replicas: 1
+  #   annotations: {}
+  #   podAnnotations: {}
+  #   updateStrategy: 
+  #     type: RollingUpdate
+  #   podManagementPolicy: OrderedReady
+  #   podLabels: {}
+  #   priorityClassName: null
+  #   securityContext: {}
+  #     # runAsNonRoot: true
+  #     # runAsUser: 1000
+  #     # runAsGroup: 1000
+  #     # fsGroup: 1000
+  #   initContainers: []
+  #   imagePullSecrets: []
+  #   containers: #[]
+  #     - name: mynode-container
+  #       image:
+  #         repository: "myrepo"
+  #         tag: "latest"
+  #         pullPolicy: Always
+  #       command: []
+  #       securityContext: {}
+  #       extraVolumeMounts: []
+  #       extraContainerPorts: []
+  #       livenessProbe: {}
+  #       readinessProbe: {}
+  #       resources: {}
+  #         # limits:
+  #         #   memory: 32Gi
+  #         # requests:
+  #         #   cpu: 5
+  #         #   memory: 20Gi
+  #       env: []
+  #         # - name: MY_ENV
+  #         #   value: "myvalue"
+  #   nodeSelector: {}
+  #   affinity: {}
+  #   tolerations: []
+  #   topologySpreadConstraints: []
+  #   terminationGracePeriodSeconds: 30
+  #   extraVolumes: []
+  #   persistence:
+  #     enabled: true
+  #     defaultMountPath: ""
+  #     existingClaim: ""
+  #     annotations: {}
+  #     accessModes:
+  #       - ReadWriteOnce
+  #     size: 1Gi
+  #     storageClassName: "node"
+  #     selector: {}

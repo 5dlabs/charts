@@ -1,0 +1,51 @@
+# .gitignore file for Helm chart project
+
+# Ignore Helm packaged chart archives
+*.tgz
+
+# Ignore artifacts directory (used in CI/CD packaging)
+artifacts/
+
+# Ignore temporary files
+tmp/
+temp/
+*.tmp
+
+# Ignore log files
+*.log
+
+# Ignore editor swap files
+*.swp
+*.swo
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Kubernetes configuration
+.kube/
+
+# Ignore Helm cache and configuration
+.helm/
+
+# Ignore personal shell history
+.history
+
+# Ignore VSCode settings
+.vscode/
+
+# Ignore IntelliJ IDEA project files
+.idea/
+
+# Ignore PyCharm project files
+*.iml
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore Node modules (if any JavaScript is used)
+node_modules/
+
+# Ignore Go binary (if using Go in the project)
+bin/

@@ -1,16 +1,22 @@
 apiVersion: v2
-name: agent-docs
-description: A Helm chart for the Agent Docs service
+name: agent-docs-server
+description: Multi-Type Documentation Server with AI-Powered Semantic Search
 type: application
 version: 0.1.0
 appVersion: "0.1.0"
+
 keywords:
-  - agent-docs
   - documentation
-  - home
-home: https://github.com/5dlabs/agent-docs
-sources:
-  - https://github.com/5dlabs/agent-docs
+  - mcp
+  - rust
+  - ai
+  - semantic-search
+
 maintainers:
-  - name: 5DLabs Team
-    email: team@5dlabs.com
+  - name: Agent Docs Team
+    email: dev@agent-docs.io
+
+sources:
+  - https://github.com/jonathonfritz/agent-docs
+
+home: https://github.com/jonathonfritz/agent-docs

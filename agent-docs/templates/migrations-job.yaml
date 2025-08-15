@@ -31,8 +31,8 @@ spec:
         - name: migrate
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/usr/local/bin/http_server"]
-          args: ["--migrate-only"]
+          command: {{ toYaml .Values.migrations.command | nindent 12 }}
+          args: {{ toYaml .Values.migrations.args | nindent 12 }}
           env:
             {{- if .Values.secret.existingSecret }}
             - name: DATABASE_URL

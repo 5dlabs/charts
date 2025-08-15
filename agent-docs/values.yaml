@@ -79,6 +79,10 @@ migrations:
   enabled: true
   backoffLimit: 3
   activeDeadlineSeconds: 7200
+  # Command and args used for the migration job
+  # Defaults run the server binary in migration-only mode from the runtime image
+  command: ["/app/http_server"]
+  args: ["--migrate-only"]
   resources:
     requests:
       cpu: 250m

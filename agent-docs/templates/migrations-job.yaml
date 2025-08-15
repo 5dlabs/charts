@@ -29,8 +29,16 @@ spec:
           command: ["/usr/local/bin/http_server"]
           args: ["--migrate-only"]
           env:
+            {{- if .Values.secret.existingSecret }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.existingSecret }}
+                  key: {{ .Values.secret.keys.DATABASE_URL }}
+            {{- else }}
             - name: DATABASE_URL
               value: {{ required "DATABASE_URL must be set" .Values.env.DATABASE_URL | quote }}
+            {{- end }}
             - name: RUST_LOG
               value: {{ .Values.env.RUST_LOG | quote }}
           {{- range .Values.migrations.extraEnv }}

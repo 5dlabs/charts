@@ -75,6 +75,7 @@ hpa:
   targetCPUUtilizationPercentage: 75
 
 migrations:
+  serviceAccountName: default
   enabled: true
   backoffLimit: 3
   activeDeadlineSeconds: 7200

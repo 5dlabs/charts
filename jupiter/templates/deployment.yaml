@@ -45,10 +45,24 @@ spec:
             preStop:
               exec:
                 command: ["sh", "-c", "sleep 25"]
-          {{- with .Values.env }}
           env:
+            {{- if .Values.jupiter.solanaCredentials.enabled }}
+            - name: X_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.jupiter.solanaCredentials.secretName }}
+                  key: SOLANA_RPC_API_KEY
+            - name: GEYSER_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.jupiter.solanaCredentials.secretName }}
+                  key: SOLANA_GRPC_ENDPOINT
+            - name: SOLANA_RPC_ENDPOINT
+              value: "https://edge.erpc.global?api-key=$(X_TOKEN)"
+            {{- end }}
+            {{- with .Values.env }}
             {{ include "jupiter-chart.renderEnv" . | nindent 12 }}
-          {{- end }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -81,22 +81,9 @@ resources:
     cpu: 500m
     memory: 512Mi
 
-livenessProbe:
-  failureThreshold: 3
-  httpGet:
-    path: /v6/health
-    port: http
-  initialDelaySeconds: 30
-  timeoutSeconds: 5
-  periodSeconds: 10
-readinessProbe:
-  failureThreshold: 3
-  httpGet:
-    path: /v6/health
-    port: http
-  initialDelaySeconds: 10
-  timeoutSeconds: 5
-  periodSeconds: 5
+# Probes disabled for Jupiter initialization
+# livenessProbe: null
+# readinessProbe: null
 
 autoscaling:
   enabled: false

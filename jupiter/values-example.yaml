@@ -1,0 +1,56 @@
+# Example values file for Jupiter Swap API
+# Copy this file and modify as needed for your deployment
+
+# Image configuration - you need to build your own image
+image:
+  repository: "your-registry/jupiter-swap-api"
+  tag: "v6.0.62"
+  pullPolicy: Always
+
+# Enable ingress for external access
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/group.name: alb-public
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/healthcheck-path: /v6/health
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '10'
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=20
+  hosts:
+    - host: jupiter-api.yourdomain.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: jupiter-api-tls
+      hosts:
+        - jupiter-api.yourdomain.com
+
+# Resource configuration for production
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+# Enable autoscaling
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 70
+
+# Environment variables
+env:
+  RUST_LOG: "info"
+  # Add any additional environment variables as needed
+
+# Jupiter-specific configuration
+jupiter:
+  rpcEndpoint: "https://api.mainnet-beta.solana.com"
+  debug: false

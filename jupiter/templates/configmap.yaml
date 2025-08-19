@@ -1,0 +1,18 @@
+{{- if .Values.configMap.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "jupiter-chart.fullname" . }}
+  labels:
+    {{- include "jupiter-chart.labels" . | nindent 4 }}
+data:
+{{- range .Values.configMap.dataElements }}
+  {{- if .fromFile }}
+  {{ .key }}: |
+    {{ tpl (.Files.Get .value) . | indent 4 }}
+  {{- else }}
+  {{ .key }}: |
+    {{ .value | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

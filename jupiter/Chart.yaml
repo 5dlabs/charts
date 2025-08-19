@@ -1,0 +1,16 @@
+apiVersion: v2
+name: jupiter
+version: 0.1.0
+description: A Helm chart for Jupiter Swap API
+appVersion: "6.0.62"
+keywords:
+  - jupiter
+  - swap
+  - solana
+  - api
+home: https://station.jup.ag/docs/apis/self-hosted
+sources:
+  - https://github.com/jup-ag/jupiter-swap-api
+maintainers:
+  - name: Chart Maintainer
+    email: maintainer@example.com

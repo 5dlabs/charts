@@ -80,3 +80,6 @@ rules:
   invalidTestRequirementsFile: ignore
   missingTestHelmignoreFile: ignore
   invalidTestHelmignoreFile: ignore
+
+# Disable YAML validation to avoid yamale dependency
+validateYaml: false

@@ -6,4 +6,4 @@ remote: origin
 target-branch: main
 helm-extra-args: "--timeout 5m --atomic -f ci/ct-values-common.yaml"
 validate-schema: false
-validate-yaml: true
+validate-yaml: false

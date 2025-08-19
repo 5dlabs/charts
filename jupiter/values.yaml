@@ -16,8 +16,7 @@ image:
   # Example build command:
   # docker build -t your-registry/jupiter-swap-api:v6.0.62 https://github.com/jup-ag/jupiter-swap-api.git
 
-imagePullSecrets:
-  - name: ghcr-login-secret
+imagePullSecrets: []
 
 nameOverride: ""
 fullnameOverride: ""

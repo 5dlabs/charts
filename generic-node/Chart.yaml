@@ -1,5 +1,0 @@
-apiVersion: v2
-name: generic-node
-version: 1.0.0
-description: A generic Helm chart for a blockchain node
-appVersion: "1.0"

@@ -1,0 +1,38 @@
+{{- if .Values.jupiter.solanaCredentials.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "jupiter-chart.fullname" . }}-startup-script
+  labels:
+    {{- include "jupiter-chart.labels" . | nindent 4 }}
+data:
+  startup.sh: |
+    #!/bin/bash
+    set -e
+    
+    # Extract values from environment variables
+    SOLANA_GRPC_ENDPOINT="${SOLANA_GRPC_ENDPOINT}"
+    SOLANA_RPC_API_KEY="${SOLANA_RPC_API_KEY}"
+    
+    # Validate required environment variables
+    if [ -z "$SOLANA_GRPC_ENDPOINT" ]; then
+      echo "ERROR: SOLANA_GRPC_ENDPOINT environment variable is required"
+      exit 1
+    fi
+    
+    if [ -z "$SOLANA_RPC_API_KEY" ]; then
+      echo "ERROR: SOLANA_RPC_API_KEY environment variable is required"
+      exit 1
+    fi
+    
+    echo "Starting Jupiter Swap API with:"
+    echo "  RPC URL: https://api.mainnet-beta.solana.com"
+    echo "  GRPC Endpoint: $SOLANA_GRPC_ENDPOINT"
+    echo "  GRPC X-Token: $SOLANA_RPC_API_KEY"
+    
+    # Start Jupiter with the provided arguments
+    exec ./jupiter-swap-api \
+      --rpc-url "https://api.mainnet-beta.solana.com" \
+      --yellowstone-grpc-endpoint "$SOLANA_GRPC_ENDPOINT" \
+      --yellowstone-grpc-x-token "$SOLANA_RPC_API_KEY"
+{{- end }}

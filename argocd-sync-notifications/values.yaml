@@ -1,5 +1,0 @@
-appName: "my-argo-notifications"
-curlImage: "curlimages/curl:latest"
-slackChannel: ""
-secretName: slack-webhook
-secretKey: token

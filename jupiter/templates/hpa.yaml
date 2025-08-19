@@ -6,10 +6,10 @@ metadata:
   labels:
     {{- include "jupiter-chart.labels" . | nindent 4 }}
 spec:
-      scaleTargetRef:
-      apiVersion: apps/v1
-      kind: Deployment
-      name: {{ include "jupiter-chart.fullname" . }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "jupiter-chart.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

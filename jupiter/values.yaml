@@ -148,7 +148,14 @@ configMap:
   dataElements: []
 
 # Jupiter-specific configuration
+
+# Jupiter-specific configuration
 jupiter:
+  # Enable external secrets for Solana credentials
+  solanaCredentials:
+    enabled: false
+    secretName: "jupiter-solana-credentials"
+  
   # RPC endpoint for Solana
   rpcEndpoint: "https://api.mainnet-beta.solana.com"
   # Enable debug mode

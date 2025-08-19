@@ -25,30 +25,36 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.6.1
 
-      - name: List changed charts
+      - name: List changed charts (PRs only)
+        if: github.event_name == 'pull_request'
         id: list
         run: |
           changed=$(ct list-changed --config .github/ct-config.yaml || true)
           echo "changed=$changed" >> $GITHUB_OUTPUT
           echo "Changed charts:\n$changed"
 
-      - name: Lint changed charts
-        if: steps.list.outputs.changed != ''
+      - name: Lint charts (PR)
+        if: github.event_name == 'pull_request' && steps.list.outputs.changed != ''
         run: ct lint --config .github/ct-config.yaml
 
+      - name: Lint charts (push)
+        if: github.event_name == 'push'
+        run: ct lint --config .github/ct-config.yaml --all
+
       - name: Create KinD cluster
-        if: steps.list.outputs.changed != ''
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && steps.list.outputs.changed != '')
         uses: helm/kind-action@v1.10.0
         with:
           cluster_name: charts-ci
 
       - name: Install kubeconform
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && steps.list.outputs.changed != '')
         run: |
           curl -L https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz | sudo tar -xz -C /usr/local/bin kubeconform
           kubeconform -v
 
-      - name: Render and kubeconform validate charts
-        if: steps.list.outputs.changed != ''
+      - name: Render + kubeconform validate (PR changed charts)
+        if: github.event_name == 'pull_request' && steps.list.outputs.changed != ''
         run: |
           set -euo pipefail
           for chart in $(ct list-changed --config .github/ct-config.yaml); do
@@ -56,6 +62,19 @@ jobs:
             helm template test-$RANDOM "$chart" -f ci/ct-values-common.yaml | kubeconform -strict -summary -ignore-missing-schemas || exit 1
           done
 
-      - name: Install changed charts into KinD
-        if: steps.list.outputs.changed != ''
+      - name: Render + kubeconform validate (push all charts)
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          for chart in $(find . -mindepth 1 -maxdepth 2 -type f -name Chart.yaml -exec dirname {} \;); do
+            echo "Rendering $chart"
+            helm template test-$RANDOM "$chart" -f ci/ct-values-common.yaml | kubeconform -strict -summary -ignore-missing-schemas || exit 1
+          done
+
+      - name: Install changed charts into KinD (PR)
+        if: github.event_name == 'pull_request' && steps.list.outputs.changed != ''
         run: ct install --config .github/ct-config.yaml
+
+      - name: Install all charts into KinD (push)
+        if: github.event_name == 'push'
+        run: ct install --config .github/ct-config.yaml --all

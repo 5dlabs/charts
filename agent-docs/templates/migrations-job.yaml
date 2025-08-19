@@ -21,16 +21,29 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       restartPolicy: Never
-      serviceAccountName: {{ include "agent-docs-server.serviceAccountName" . }}
+      serviceAccountName: {{ default "default" .Values.migrations.serviceAccountName }}
+
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml . | indent 8 }}
+      {{- end }}
       containers:
         - name: migrate
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/usr/local/bin/http_server"]
-          args: ["--migrate-only"]
+          command: {{ toYaml .Values.migrations.command | nindent 12 }}
+          args: {{ toYaml .Values.migrations.args | nindent 12 }}
           env:
+            {{- if .Values.secret.existingSecret }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.existingSecret }}
+                  key: {{ .Values.secret.keys.DATABASE_URL }}
+            {{- else }}
             - name: DATABASE_URL
               value: {{ required "DATABASE_URL must be set" .Values.env.DATABASE_URL | quote }}
+            {{- end }}
             - name: RUST_LOG
               value: {{ .Values.env.RUST_LOG | quote }}
           {{- range .Values.migrations.extraEnv }}

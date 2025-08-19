@@ -1,3 +1,4 @@
+---
 nameOverride: ""
 fullnameOverride: ""
 
@@ -16,13 +17,20 @@ service:
   targetPort: 3001
 
 env:
-  # Required at runtime
+  # When not using an existing secret, set inline values here
   DATABASE_URL: ""
-  # Optional provider keys; use external secrets in real deployments
   OPENAI_API_KEY: ""
   RUST_LOG: "info,doc_server=debug"
   PORT: "3001"
   MCP_HOST: "0.0.0.0"
+
+# If set, chart will read env via secretKeyRef instead of plain values
+secret:
+  existingSecret: ""
+  keys:
+    # Map runtime DATABASE_URL from VECTOR_DATABASE_URL key in the secret
+    DATABASE_URL: VECTOR_DATABASE_URL
+    OPENAI_API_KEY: OPENAI_API_KEY
 
 resources:
   requests:
@@ -69,9 +77,14 @@ hpa:
   targetCPUUtilizationPercentage: 75
 
 migrations:
+  serviceAccountName: default
   enabled: true
   backoffLimit: 3
   activeDeadlineSeconds: 7200
+  # Command and args used for the migration job
+  # Defaults run the server binary in migration-only mode from the runtime image
+  command: ["/app/http_server"]
+  args: ["--migrate-only"]
   resources:
     requests:
       cpu: 250m

@@ -7,9 +7,14 @@ vault:
   refreshAfter: "720h"
 
 image:
-  repository: "realtinsypher/jupiter-swap-api"
+  repository: "your-registry/jupiter-swap-api"
   pullPolicy: Always
   tag: "v6.0.62"
+  # Note: Jupiter doesn't provide official Docker images.
+  # You need to build your own image using the Dockerfile from:
+  # https://github.com/jup-ag/jupiter-swap-api
+  # Example build command:
+  # docker build -t your-registry/jupiter-swap-api:v6.0.62 https://github.com/jup-ag/jupiter-swap-api.git
 
 imagePullSecrets:
   - name: ghcr-login-secret

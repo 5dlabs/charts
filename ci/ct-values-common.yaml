@@ -1,0 +1,39 @@
+# Common CI values used by chart-testing and kubeconform
+# Safe defaults to allow rendering and smoke installs
+
+# For charts that require image repository/tag
+image:
+  repository: nginx
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Default resources small enough for KinD
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+# Generic service defaults
+service:
+  type: ClusterIP
+  port: 8080
+
+# Disable ingress in CI by default
+ingress:
+  enabled: false
+
+# Agent-docs specific overrides to satisfy required env
+env:
+  DATABASE_URL: "postgres://postgres:postgres@postgres:5432/postgres"
+  OPENAI_API_KEY: "test-key"
+
+# Disable optional extras that might create cluster-scoped resources
+hpa:
+  enabled: false
+
+# Disable vault integration when present
+vault:
+  enabled: false

@@ -1,0 +1,7 @@
+chart-dirs:
+  - .
+validate-maintainers: false
+check-version-increment: false
+remote: origin
+target-branch: main
+helm-extra-args: "--timeout 5m --atomic -f ci/ct-values-common.yaml"

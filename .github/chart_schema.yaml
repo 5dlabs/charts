@@ -1,0 +1,79 @@
+# Chart schema for chart-testing validation
+# This is a minimal schema that allows most common chart structures
+
+$schema: "http://json-schema.org/draft-07/schema#"
+type: "object"
+required: ["apiVersion", "name", "version"]
+properties:
+  apiVersion:
+    type: "string"
+    pattern: "^v[12]$"
+  name:
+    type: "string"
+    pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+  version:
+    type: "string"
+    pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+(-[a-zA-Z0-9.-]+)?(\\+[a-zA-Z0-9.-]+)?$"
+  description:
+    type: "string"
+  keywords:
+    type: "array"
+    items:
+      type: "string"
+  home:
+    type: "string"
+    format: "uri"
+  sources:
+    type: "array"
+    items:
+      type: "string"
+      format: "uri"
+  maintainers:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        email:
+          type: "string"
+          format: "email"
+        url:
+          type: "string"
+          format: "uri"
+  icon:
+    type: "string"
+  appVersion:
+    type: "string"
+  deprecated:
+    type: "boolean"
+  annotations:
+    type: "object"
+  kubeVersion:
+    type: "string"
+  dependencies:
+    type: "array"
+    items:
+      type: "object"
+      required: ["name", "version"]
+      properties:
+        name:
+          type: "string"
+        version:
+          type: "string"
+        repository:
+          type: "string"
+        condition:
+          type: "string"
+        tags:
+          type: "array"
+          items:
+            type: "string"
+        enabled:
+          type: "boolean"
+        import-values:
+          type: "array"
+          items:
+            type: "object"
+        alias:
+          type: "string"

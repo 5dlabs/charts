@@ -33,13 +33,21 @@ jobs:
           echo "changed=$changed" >> $GITHUB_OUTPUT
           echo "Changed charts:\n$changed"
 
-      - name: Lint charts (PR)
+      - name: Lint charts with Helm (PR)
         if: github.event_name == 'pull_request' && steps.list.outputs.changed != ''
-        run: ct lint --config .github/ct-config.yaml
+        run: |
+          for chart in $(ct list-changed --config .github/ct-config.yaml); do
+            echo "Linting $chart"
+            helm lint "$chart" --strict
+          done
 
-      - name: Lint charts (push)
+      - name: Lint charts with Helm (push)
         if: github.event_name == 'push'
-        run: ct lint --config .github/ct-config.yaml --all
+        run: |
+          for chart in $(find . -mindepth 1 -maxdepth 2 -type f -name Chart.yaml -exec dirname {} \;); do
+            echo "Linting $chart"
+            helm lint "$chart" --strict
+          done
 
       - name: Create KinD cluster
         if: github.event_name == 'push' || (github.event_name == 'pull_request' && steps.list.outputs.changed != '')

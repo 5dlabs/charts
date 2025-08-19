@@ -47,11 +47,21 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
+          # Create gh-pages branch if it doesn't exist
+          if ! git ls-remote --heads origin gh-pages | grep gh-pages > /dev/null; then
+            echo "Creating gh-pages branch..."
+            git checkout --orphan gh-pages
+            git rm -rf .
+            git commit --allow-empty -m "Initial gh-pages branch"
+            git push origin gh-pages
+            git checkout main
+          fi
+
           # Fetch gh-pages branch
           git fetch origin gh-pages
 
           # Create a worktree for gh-pages
-          git worktree add gh-pages-worktree gh-pages || git worktree add gh-pages-worktree
+          git worktree add gh-pages-worktree gh-pages
 
           # Copy packaged charts into the gh-pages worktree
           cp -R packaged/* gh-pages-worktree/

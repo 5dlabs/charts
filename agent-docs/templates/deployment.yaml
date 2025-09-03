@@ -79,6 +79,18 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 15
+          volumeMounts:
+            - name: tools-config
+              mountPath: /app/tools.json
+              subPath: tools.json
+              readOnly: true
+      volumes:
+        - name: tools-config
+          configMap:
+            name: {{ include "agent-docs-server.fullname" . }}-config
+            items:
+              - key: tools.json
+                path: tools.json
       {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

@@ -5,7 +5,7 @@ fullnameOverride: ""
 image:
   repository: ghcr.io/5dlabs/agent-docs
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 imagePullSecrets: []
 

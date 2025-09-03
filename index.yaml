@@ -3,9 +3,9 @@ entries:
   agent-docs-server:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2025-09-03T17:09:40.991085083Z"
+    created: "2025-09-03T19:49:07.662995034Z"
     description: Multi-Type Documentation Server with AI-Powered Semantic Search
-    digest: 8f9648226d7a87f975698227867cd57e7249241469747b508e510783dead6c0b
+    digest: 847cfe31b8b5f4784efc8da6c04175a7bf2cc624a3bc533ae9fc1d8f1e9375a3
     home: https://github.com/jonathonfritz/agent-docs
     keywords:
     - documentation
@@ -26,9 +26,9 @@ entries:
   jupiter:
   - apiVersion: v2
     appVersion: 6.0.62
-    created: "2025-09-03T17:09:40.991866986Z"
+    created: "2025-09-03T19:49:07.663601904Z"
     description: A Helm chart for Jupiter Swap API
-    digest: e2f98548cdfe78f38e08ae03bcb8e3ae2b2ea7e268eec47e439ebeceb898c3d8
+    digest: 80bfdf3fbe36b686fc41b7a954e2e701b76ac96b3c960a670651a512eae6829a
     home: https://station.jup.ag/docs/apis/self-hosted
     keywords:
     - jupiter
@@ -47,11 +47,11 @@ entries:
   universal:
   - apiVersion: v2
     appVersion: "1.0"
-    created: "2025-09-03T17:09:40.992542205Z"
+    created: "2025-09-03T19:49:07.664142227Z"
     description: A universal Helm chart
-    digest: f5f27611837b8b22e8021ff710774e43a9356fb3d5d497a94d5af042df976aa6
+    digest: 8678d367e748d63ccff25656dde7470a658985ee523d7632729ef31156952232
     name: universal
     urls:
     - https://charts.bnc-tooling.com/universal-0.0.2.tgz
     version: 0.0.2
-generated: "2025-09-03T17:09:40.990180346Z"
+generated: "2025-09-03T19:49:07.662256782Z"

@@ -65,6 +65,8 @@ spec:
               value: {{ .Values.env.PORT | quote }}
             - name: MCP_HOST
               value: {{ .Values.env.MCP_HOST | quote }}
+            - name: INGEST_WORK_DIR
+              value: {{ ternary .Values.persistence.mountPath .Values.env.INGEST_WORK_DIR .Values.persistence.enabled | quote }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           readinessProbe:
@@ -84,6 +86,9 @@ spec:
               mountPath: /app/tools.json
               subPath: tools.json
               readOnly: true
+            - name: workdir
+              mountPath: {{ if .Values.persistence.enabled }}{{ .Values.persistence.mountPath }}{{ else }}/tmp{{ end }}
+              readOnly: false
       volumes:
         - name: tools-config
           configMap:
@@ -91,6 +96,13 @@ spec:
             items:
               - key: tools.json
                 path: tools.json
+        - name: workdir
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{ else }}{{ include "agent-docs-server.fullname" . }}-workdir{{ end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
@@ -103,5 +115,3 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
-
-

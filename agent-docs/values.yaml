@@ -23,6 +23,21 @@ env:
   RUST_LOG: "info,doc_server=debug"
   PORT: "3001"
   MCP_HOST: "0.0.0.0"
+  # Writable working directory for ingestion temp files
+  INGEST_WORK_DIR: "/tmp"
+
+# Optional persistent storage for ingestion working directory
+persistence:
+  enabled: false
+  # If true and existingClaim is empty, a PVC will be created
+  # If using an existing claim, set existingClaim and leave size/storageClassName as-is
+  existingClaim: ""
+  mountPath: "/work"            # Will be used as INGEST_WORK_DIR when enabled
+  size: 10Gi
+  storageClassName: "local-path" # e.g., Rancher local-path provisioner
+  accessModes:
+    - ReadWriteOnce
+  annotations: {}
 
 # If set, chart will read env via secretKeyRef instead of plain values
 secret:

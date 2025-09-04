@@ -65,6 +65,8 @@ spec:
               value: {{ .Values.env.PORT | quote }}
             - name: MCP_HOST
               value: {{ .Values.env.MCP_HOST | quote }}
+            - name: CLAUDE_TIMEOUT_SECS
+              value: {{ .Values.env.CLAUDE_TIMEOUT_SECS | quote }}
             - name: INGEST_WORK_DIR
               value: {{ ternary .Values.persistence.mountPath .Values.env.INGEST_WORK_DIR .Values.persistence.enabled | quote }}
           resources:

@@ -3,7 +3,29 @@ entries:
   agent-docs-server:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2025-09-03T19:49:07.662995034Z"
+    created: "2025-09-04T22:01:35.586143561Z"
+    description: Multi-Type Documentation Server with AI-Powered Semantic Search
+    digest: db36b2f5f7bc20ad64c1fb50f17b481dd40465fc7950924bbdbcdfb9229d93ca
+    home: https://github.com/jonathonfritz/agent-docs
+    keywords:
+    - documentation
+    - mcp
+    - rust
+    - ai
+    - semantic-search
+    maintainers:
+    - email: dev@agent-docs.io
+      name: Agent Docs Team
+    name: agent-docs-server
+    sources:
+    - https://github.com/jonathonfritz/agent-docs
+    type: application
+    urls:
+    - https://charts.bnc-tooling.com/agent-docs-server-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-09-04T22:01:35.585349953Z"
     description: Multi-Type Documentation Server with AI-Powered Semantic Search
     digest: 847cfe31b8b5f4784efc8da6c04175a7bf2cc624a3bc533ae9fc1d8f1e9375a3
     home: https://github.com/jonathonfritz/agent-docs
@@ -26,9 +48,9 @@ entries:
   jupiter:
   - apiVersion: v2
     appVersion: 6.0.62
-    created: "2025-09-03T19:49:07.663601904Z"
+    created: "2025-09-04T22:01:35.587325767Z"
     description: A Helm chart for Jupiter Swap API
-    digest: 80bfdf3fbe36b686fc41b7a954e2e701b76ac96b3c960a670651a512eae6829a
+    digest: 14fd21245bed448b6e290f4fbf70bcd0a36f15df0457eb20642a0bff46a49853
     home: https://station.jup.ag/docs/apis/self-hosted
     keywords:
     - jupiter
@@ -47,11 +69,11 @@ entries:
   universal:
   - apiVersion: v2
     appVersion: "1.0"
-    created: "2025-09-03T19:49:07.664142227Z"
+    created: "2025-09-04T22:01:35.587869614Z"
     description: A universal Helm chart
-    digest: 8678d367e748d63ccff25656dde7470a658985ee523d7632729ef31156952232
+    digest: 82f2204b8dd33cb7c4ddc7840c3753fbc3b255c2a32e04ef066103637386757c
     name: universal
     urls:
     - https://charts.bnc-tooling.com/universal-0.0.2.tgz
     version: 0.0.2
-generated: "2025-09-03T19:49:07.662256782Z"
+generated: "2025-09-04T22:01:35.584618081Z"

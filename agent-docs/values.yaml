@@ -46,6 +46,7 @@ secret:
     # Map runtime DATABASE_URL from VECTOR_DATABASE_URL key in the secret
     DATABASE_URL: VECTOR_DATABASE_URL
     OPENAI_API_KEY: OPENAI_API_KEY
+    ANTHROPIC_API_KEY: ANTHROPIC_API_KEY
 
 resources:
   requests:

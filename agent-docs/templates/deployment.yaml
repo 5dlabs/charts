@@ -53,6 +53,13 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secret.existingSecret }}
                   key: {{ .Values.secret.keys.OPENAI_API_KEY }}
+            {{- if .Values.secret.keys.ANTHROPIC_API_KEY }}
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.existingSecret }}
+                  key: {{ .Values.secret.keys.ANTHROPIC_API_KEY }}
+            {{- end }}
             {{- else }}
             - name: DATABASE_URL
               value: {{ required "DATABASE_URL must be set" .Values.env.DATABASE_URL | quote }}

@@ -25,6 +25,8 @@ env:
   MCP_HOST: "0.0.0.0"
   # Writable working directory for ingestion temp files
   INGEST_WORK_DIR: "/tmp"
+  # Claude binary read timeout in seconds (first line)
+  CLAUDE_TIMEOUT_SECS: "180"
 
 # Optional persistent storage for ingestion working directory
 persistence:

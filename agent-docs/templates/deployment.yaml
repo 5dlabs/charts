@@ -63,8 +63,10 @@ spec:
             {{- else }}
             - name: DATABASE_URL
               value: {{ required "DATABASE_URL must be set" .Values.env.DATABASE_URL | quote }}
+            {{- if .Values.env.OPENAI_API_KEY }}
             - name: OPENAI_API_KEY
               value: {{ .Values.env.OPENAI_API_KEY | quote }}
+            {{- end }}
             {{- end }}
             - name: RUST_LOG
               value: {{ .Values.env.RUST_LOG | quote }}
@@ -72,6 +74,8 @@ spec:
               value: {{ .Values.env.PORT | quote }}
             - name: MCP_HOST
               value: {{ .Values.env.MCP_HOST | quote }}
+            - name: CLAUDE_TIMEOUT_SECS
+              value: {{ .Values.env.CLAUDE_TIMEOUT_SECS | quote }}
             - name: INGEST_WORK_DIR
               value: {{ ternary .Values.persistence.mountPath .Values.env.INGEST_WORK_DIR .Values.persistence.enabled | quote }}
           resources:

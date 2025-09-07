@@ -28,6 +28,30 @@ env:
   # Claude binary read timeout in seconds (first line)
   CLAUDE_TIMEOUT_SECS: "180"
 
+# Queue configuration
+queue:
+  enabled: false
+  # Default Redis URL from background-job-system-requirements.md
+  redisUrl: "redis://redis-auth-service.databases.svc.cluster.local:6379"
+
+# Worker deployment for Redis-backed jobs
+worker:
+  enabled: false
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  env:
+    RUST_LOG: "info,mcp=info"
+    WORKER_JOB_TYPES: "ingest,crate_add"
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
 # Optional persistent storage for ingestion working directory
 persistence:
   enabled: false

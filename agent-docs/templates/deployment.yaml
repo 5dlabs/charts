@@ -76,6 +76,12 @@ spec:
               value: {{ .Values.env.CLAUDE_TIMEOUT_SECS | quote }}
             - name: INGEST_WORK_DIR
               value: {{ ternary .Values.persistence.mountPath .Values.env.INGEST_WORK_DIR .Values.persistence.enabled | quote }}
+            {{- if .Values.queue.enabled }}
+            - name: USE_REDIS_QUEUE
+              value: "1"
+            - name: REDIS_URL
+              value: {{ .Values.queue.redisUrl | quote }}
+            {{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           readinessProbe:

@@ -31,6 +31,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/app/job_worker"]
+          securityContext:
+{{ toYaml .Values.securityContext | indent 12 }}
           env:
             {{- if .Values.secret.existingSecret }}
             - name: DATABASE_URL
@@ -63,6 +65,10 @@ spec:
               value: {{ .Values.env.CLAUDE_TIMEOUT_SECS | default "180" | quote }}
             - name: INGEST_WORK_DIR
               value: {{ ternary .Values.persistence.mountPath .Values.env.INGEST_WORK_DIR .Values.persistence.enabled | quote }}
+          volumeMounts:
+            - name: workdir
+              mountPath: {{ if .Values.persistence.enabled }}{{ .Values.persistence.mountPath }}{{ else }}/tmp{{ end }}
+              readOnly: false
           resources:
 {{ toYaml .Values.worker.resources | indent 12 }}
       {{- with .Values.worker.nodeSelector }}
@@ -77,4 +83,12 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
+      volumes:
+        - name: workdir
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{ else }}{{ include "agent-docs-server.fullname" . }}-workdir{{ end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
 {{- end }}

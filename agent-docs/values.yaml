@@ -9,7 +9,7 @@ image:
 
 imagePullSecrets: []
 
-replicaCount: 2
+replicaCount: 1
 
 service:
   type: ClusterIP
@@ -30,13 +30,13 @@ env:
 
 # Queue configuration
 queue:
-  enabled: false
+  enabled: true
   # Default Redis URL from background-job-system-requirements.md
   redisUrl: "redis://redis-auth-service.databases.svc.cluster.local:6379"
 
 # Worker deployment for Redis-backed jobs
 worker:
-  enabled: false
+  enabled: true
   replicaCount: 1
   resources:
     requests:
@@ -51,18 +51,19 @@ worker:
     # Ensure Claude runner is available and configured
     CLAUDE_BINARY_PATH: "claude"
     CLAUDE_MODEL: "claude-3-5-sonnet-20241022"
-  nodeSelector: {}
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
   tolerations: []
   affinity: {}
 
 # Optional persistent storage for ingestion working directory
 persistence:
-  enabled: false
+  enabled: true
   # If true and existingClaim is empty, a PVC will be created
   # If using an existing claim, set existingClaim and leave size/storageClassName as-is
   existingClaim: ""
   mountPath: "/work"            # Will be used as INGEST_WORK_DIR when enabled
-  size: 10Gi
+  size: 20Gi
   storageClassName: "local-path" # e.g., Rancher local-path provisioner
   accessModes:
     - ReadWriteOnce
@@ -141,7 +142,8 @@ migrations:
   # Optional extra env vars for migration job
   extraEnv: []
 
-nodeSelector: {}
+nodeSelector:
+  node-role.kubernetes.io/worker: ""
 
 tolerations: []
 

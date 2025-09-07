@@ -52,7 +52,7 @@ worker:
     CLAUDE_BINARY_PATH: "claude"
     CLAUDE_MODEL: "claude-3-5-sonnet-20241022"
   nodeSelector:
-    node-role.kubernetes.io/worker: ""
+    kubernetes.io/hostname: talos-a43-ee1
   tolerations: []
   affinity: {}
 
@@ -143,7 +143,7 @@ migrations:
   extraEnv: []
 
 nodeSelector:
-  node-role.kubernetes.io/worker: ""
+  kubernetes.io/hostname: talos-a43-ee1
 
 tolerations: []
 

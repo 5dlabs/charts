@@ -48,6 +48,9 @@ worker:
   env:
     RUST_LOG: "info,mcp=info"
     WORKER_JOB_TYPES: "ingest,crate_add"
+    # Ensure Claude runner is available and configured
+    CLAUDE_BINARY_PATH: "claude"
+    CLAUDE_MODEL: "claude-3-5-sonnet-20241022"
   nodeSelector: {}
   tolerations: []
   affinity: {}

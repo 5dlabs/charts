@@ -12,6 +12,37 @@ Helm chart for deploying the Agent Docs MCP http_server. Includes secure default
 
 This mounts a writable `emptyDir` at `/tmp` and sets `INGEST_WORK_DIR=/tmp` for ingestion jobs.
 
+## Enable Redis Queue + Worker (recommended for production)
+
+Run long-running ingestion via a dedicated worker using Redis-backed jobs. This keeps the server responsive and lets you scale workers independently.
+
+1) Enable the queue on the server and enable the worker:
+
+```bash
+helm upgrade --install agent-docs docs/charts/agent-docs \
+  -n agent-docs --create-namespace \
+  --set env.DATABASE_URL=postgres://user:pass@host:5432/dbname \
+  --set queue.enabled=true \
+  --set queue.redisUrl=redis://redis-auth-service.databases.svc.cluster.local:6379 \
+  --set worker.enabled=true
+```
+
+2) Optional, tune worker concurrency and Claude settings in `values.yaml`:
+
+- `worker.env.WORKER_JOB_TYPES`: `ingest,crate_add`
+- `worker.env.CLAUDE_BINARY_PATH`: `claude`
+- `worker.env.CLAUDE_MODEL`: `claude-3-5-sonnet-20241022`
+- `env.CLAUDE_TIMEOUT_SECS`: `180`
+
+3) Verify:
+
+- `kubectl get deploy -n agent-docs` → should show both server and `-worker`
+- `kubectl logs deploy/agent-docs-agent-docs-worker -n agent-docs -f` → watch ingest logs
+
+Notes:
+- The container image includes both `/app/http_server` and `/app/job_worker` binaries.
+- The server sets `USE_REDIS_QUEUE=1` and `REDIS_URL` when `queue.enabled=true`.
+
 ## Persistence Options
 
 By default the container uses a read-only root filesystem. Ingestion needs a writable work directory for git clones and temp files. You have two options:
@@ -66,4 +97,3 @@ By default the container uses a read-only root filesystem. Ingestion needs a wri
 
 - The ingestion pipeline spawns a local loader process in the same pod, using `INGEST_WORK_DIR` for temp state.
 - If you run multiple replicas, ingest job status is persisted in the database and can be queried from any replica.
-

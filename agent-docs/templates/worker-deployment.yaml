@@ -38,9 +38,16 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secret.existingSecret }}
                   key: {{ .Values.secret.keys.DATABASE_URL }}
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.existingSecret }}
+                  key: {{ .Values.secret.keys.OPENAI_API_KEY }}
             {{- else }}
             - name: DATABASE_URL
               value: {{ required "DATABASE_URL must be set" .Values.env.DATABASE_URL | quote }}
+            - name: OPENAI_API_KEY
+              value: {{ .Values.env.OPENAI_API_KEY | quote }}
             {{- end }}
             - name: RUST_LOG
               value: {{ .Values.worker.env.RUST_LOG | quote }}
@@ -48,6 +55,14 @@ spec:
               value: {{ .Values.queue.redisUrl | quote }}
             - name: WORKER_JOB_TYPES
               value: {{ .Values.worker.env.WORKER_JOB_TYPES | quote }}
+            - name: CLAUDE_BINARY_PATH
+              value: {{ .Values.worker.env.CLAUDE_BINARY_PATH | default "claude" | quote }}
+            - name: CLAUDE_MODEL
+              value: {{ .Values.worker.env.CLAUDE_MODEL | default "claude-3-5-sonnet-20241022" | quote }}
+            - name: CLAUDE_TIMEOUT_SECS
+              value: {{ .Values.env.CLAUDE_TIMEOUT_SECS | default "180" | quote }}
+            - name: INGEST_WORK_DIR
+              value: {{ ternary .Values.persistence.mountPath .Values.env.INGEST_WORK_DIR .Values.persistence.enabled | quote }}
           resources:
 {{ toYaml .Values.worker.resources | indent 12 }}
       {{- with .Values.worker.nodeSelector }}
@@ -63,4 +78,3 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
 {{- end }}
-

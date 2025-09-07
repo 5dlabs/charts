@@ -3,7 +3,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 image:
-  repository: ghcr.io/5dlabs/agent-docs
+  repository: ghcr.io/5dlabs/agent-docs/server
   tag: latest
   pullPolicy: Always
 

@@ -18,7 +18,7 @@ service:
 
 env:
   # When not using an existing secret, set inline values here
-  DATABASE_URL: ""
+  DATABASE_URL: "postgresql://mcp_user:mcp_password@vector-postgres.databases.svc.cluster.local:5432/agent_team"
   OPENAI_API_KEY: ""
   RUST_LOG: "info,doc_server=debug"
   PORT: "3001"
@@ -31,8 +31,8 @@ env:
 # Queue configuration
 queue:
   enabled: true
-  # Default Redis URL from background-job-system-requirements.md
-  redisUrl: "redis://redis-auth-service.databases.svc.cluster.local:6379"
+  # Redis URL updated to match actual cluster service
+  redisUrl: "redis://rfs-redis.databases.svc.cluster.local:26379"
 
 # Worker deployment for Redis-backed jobs
 worker:

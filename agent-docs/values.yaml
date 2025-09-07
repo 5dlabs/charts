@@ -52,6 +52,9 @@ worker:
     # Ensure Claude runner is available and configured
     CLAUDE_BINARY_PATH: "claude"
     CLAUDE_MODEL: "claude-3-5-sonnet-20241022"
+    # Redis authentication
+    REDIS_USERNAME: "worker"
+    REDIS_PASSWORD: "workerpass"
   nodeSelector:
     kubernetes.io/hostname: talos-a43-ee1
   tolerations: []

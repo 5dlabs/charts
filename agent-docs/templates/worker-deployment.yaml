@@ -45,11 +45,20 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secret.existingSecret }}
                   key: {{ .Values.secret.keys.OPENAI_API_KEY }}
+            {{- if .Values.secret.keys.ANTHROPIC_API_KEY }}
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.existingSecret }}
+                  key: {{ .Values.secret.keys.ANTHROPIC_API_KEY }}
+            {{- end }}
             {{- else }}
             - name: DATABASE_URL
               value: {{ required "DATABASE_URL must be set" .Values.env.DATABASE_URL | quote }}
             - name: OPENAI_API_KEY
               value: {{ .Values.env.OPENAI_API_KEY | quote }}
+            - name: ANTHROPIC_API_KEY
+              value: {{ .Values.env.ANTHROPIC_API_KEY | quote }}
             {{- end }}
             - name: RUST_LOG
               value: {{ .Values.worker.env.RUST_LOG | quote }}

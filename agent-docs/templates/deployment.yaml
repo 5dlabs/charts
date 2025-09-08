@@ -65,6 +65,8 @@ spec:
               value: {{ required "DATABASE_URL must be set" .Values.env.DATABASE_URL | quote }}
             - name: OPENAI_API_KEY
               value: {{ .Values.env.OPENAI_API_KEY | quote }}
+            - name: ANTHROPIC_API_KEY
+              value: {{ .Values.env.ANTHROPIC_API_KEY | quote }}
             {{- end }}
             - name: RUST_LOG
               value: {{ .Values.env.RUST_LOG | quote }}

@@ -21,6 +21,7 @@ env:
   # When not using an existing secret, set inline values here
   DATABASE_URL: "postgresql://mcp_user:mcp_password@vector-postgres.databases.svc.cluster.local:5432/agent_team"
   OPENAI_API_KEY: ""
+  ANTHROPIC_API_KEY: ""
   RUST_LOG: "info,doc_server=debug"
   PORT: "3001"
   MCP_HOST: "0.0.0.0"
@@ -57,10 +58,9 @@ worker:
     REDIS_PASSWORD: "workerpass"
     # Use PVC for temporary files instead of read-only /tmp
     TMPDIR: "/work"
-    # Claude configuration directory in PVC
-    CLAUDE_CONFIG_DIR: "/work/claude-code-config"
+    
   # Worker command to set up directories and start job worker
-  command: ["sh", "-c", "mkdir -p /work/claude-code-config && exec /app/job_worker"]
+  command: ["sh", "-c", "exec /app/job_worker"]
   nodeSelector:
     kubernetes.io/hostname: talos-a43-ee1
   tolerations: []

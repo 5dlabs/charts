@@ -3,13 +3,14 @@ nameOverride: ""
 fullnameOverride: ""
 
 image:
-  repository: ghcr.io/5dlabs/agent-docs
+  repository: ghcr.io/5dlabs/agent-docs/server
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: ghcr-secret
 
-replicaCount: 2
+replicaCount: 1
 
 service:
   type: ClusterIP
@@ -18,11 +19,59 @@ service:
 
 env:
   # When not using an existing secret, set inline values here
-  DATABASE_URL: ""
+  DATABASE_URL: "postgresql://mcp_user:mcp_password@vector-postgres.databases.svc.cluster.local:5432/agent_team"
   OPENAI_API_KEY: ""
   RUST_LOG: "info,doc_server=debug"
   PORT: "3001"
   MCP_HOST: "0.0.0.0"
+  # Writable working directory for ingestion temp files
+  INGEST_WORK_DIR: "/tmp"
+  # Claude binary read timeout in seconds (first line)
+  CLAUDE_TIMEOUT_SECS: "180"
+
+# Queue configuration
+queue:
+  enabled: true
+  # Redis URL updated to match actual cluster service (master, not sentinel)
+  redisUrl: "redis://redis.databases.svc.cluster.local:6379"
+
+# Worker deployment for Redis-backed jobs
+worker:
+  enabled: true
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  env:
+    RUST_LOG: "info,mcp=info"
+    WORKER_JOB_TYPES: "ingest,crate_add"
+    # Ensure Claude runner is available and configured
+    CLAUDE_BINARY_PATH: "claude"
+    CLAUDE_MODEL: "claude-3-5-sonnet-20241022"
+    # Redis authentication
+    REDIS_USERNAME: "worker"
+    REDIS_PASSWORD: "workerpass"
+  nodeSelector:
+    kubernetes.io/hostname: talos-a43-ee1
+  tolerations: []
+  affinity: {}
+
+# Optional persistent storage for ingestion working directory
+persistence:
+  enabled: true
+  # If true and existingClaim is empty, a PVC will be created
+  # If using an existing claim, set existingClaim and leave size/storageClassName as-is
+  existingClaim: ""
+  mountPath: "/work"            # Will be used as INGEST_WORK_DIR when enabled
+  size: 20Gi
+  storageClassName: "local-path" # e.g., Rancher local-path provisioner
+  accessModes:
+    - ReadWriteOnce
+  annotations: {}
 
 # Redis configuration for job queue
 queue:
@@ -36,6 +85,7 @@ secret:
     # Map runtime DATABASE_URL from VECTOR_DATABASE_URL key in the secret
     DATABASE_URL: VECTOR_DATABASE_URL
     OPENAI_API_KEY: OPENAI_API_KEY
+    ANTHROPIC_API_KEY: ANTHROPIC_API_KEY
 
 resources:
   requests:
@@ -101,8 +151,82 @@ migrations:
   # Optional extra env vars for migration job
   extraEnv: []
 
-nodeSelector: {}
+nodeSelector:
+  kubernetes.io/hostname: talos-a43-ee1
 
 tolerations: []
 
 affinity: {}
+
+# Tools configuration as JSON string
+# This will be mounted as /app/tools.json in the container
+toolsConfig: |
+  {
+    "tools": [
+      {
+        "name": "birdeye_query",
+        "docType": "birdeye",
+        "title": "BirdEye API Documentation Query",
+        "description": "Search and retrieve information from BirdEye blockchain API documentation. Query across 600+ API endpoints with filtering by version, method, and parameters.",
+        "enabled": true,
+        "metadataHints": {
+          "supported_formats": ["json", "yaml"],
+          "supported_complexity_levels": [],
+          "supported_categories": ["defi", "pricing", "token", "portfolio"],
+          "supported_topics": ["api", "endpoints", "parameters", "responses"],
+          "supports_api_version": true
+        }
+      },
+      {
+        "name": "solana_query",
+        "docType": "solana",
+        "title": "Solana Documentation Query",
+        "description": "Search Solana core documentation, architecture diagrams, ZK cryptography specifications, and development guides. Includes consensus, networking, and validator documentation.",
+        "enabled": true,
+        "metadataHints": {
+          "supported_formats": ["markdown", "pdf", "bob", "msc"],
+          "supported_complexity_levels": ["beginner", "intermediate", "advanced"],
+          "supported_categories": [
+            "core",
+            "architecture-diagrams",
+            "sequence-diagrams",
+            "zk-cryptography"
+          ],
+          "supported_topics": [
+            "consensus",
+            "networking",
+            "validators",
+            "cryptography",
+            "development"
+          ],
+          "supports_api_version": false
+        }
+      },
+      {
+        "name": "jupiter_query",
+        "docType": "jupiter",
+        "title": "Jupiter Protocol Documentation Query",
+        "description": "Search Jupiter DeFi protocol documentation for DEX aggregation, swap APIs, and Solana-based trading infrastructure.",
+        "enabled": true,
+        "metadataHints": {
+          "supported_formats": ["markdown", "json", "typescript"],
+          "supported_complexity_levels": ["beginner", "intermediate", "advanced"],
+          "supported_categories": [
+            "swap-api",
+            "token-api",
+            "price-api",
+            "dex-integration",
+            "wallet-integration"
+          ],
+          "supported_topics": [
+            "trading",
+            "liquidity",
+            "apis",
+            "integration",
+            "development"
+          ],
+          "supports_api_version": true
+        }
+      }
+    ]
+  }

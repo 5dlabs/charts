@@ -53,6 +53,13 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secret.existingSecret }}
                   key: {{ .Values.secret.keys.OPENAI_API_KEY }}
+            {{- if .Values.secret.keys.ANTHROPIC_API_KEY }}
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.existingSecret }}
+                  key: {{ .Values.secret.keys.ANTHROPIC_API_KEY }}
+            {{- end }}
             {{- else }}
             - name: DATABASE_URL
               value: {{ required "DATABASE_URL must be set" .Values.env.DATABASE_URL | quote }}
@@ -65,7 +72,13 @@ spec:
               value: {{ .Values.env.PORT | quote }}
             - name: MCP_HOST
               value: {{ .Values.env.MCP_HOST | quote }}
+            - name: CLAUDE_TIMEOUT_SECS
+              value: {{ .Values.env.CLAUDE_TIMEOUT_SECS | quote }}
+            - name: INGEST_WORK_DIR
+              value: {{ ternary .Values.persistence.mountPath .Values.env.INGEST_WORK_DIR .Values.persistence.enabled | quote }}
             {{- if .Values.queue.enabled }}
+            - name: USE_REDIS_QUEUE
+              value: "1"
             - name: REDIS_URL
               value: {{ .Values.queue.redisUrl | quote }}
             {{- end }}
@@ -83,6 +96,28 @@ spec:
               port: http
             initialDelaySeconds: 10
             periodSeconds: 15
+          volumeMounts:
+            - name: tools-config
+              mountPath: /app/tools.json
+              subPath: tools.json
+              readOnly: true
+            - name: workdir
+              mountPath: {{ if .Values.persistence.enabled }}{{ .Values.persistence.mountPath }}{{ else }}/tmp{{ end }}
+              readOnly: false
+      volumes:
+        - name: tools-config
+          configMap:
+            name: {{ include "agent-docs-server.fullname" . }}-config
+            items:
+              - key: tools.json
+                path: tools.json
+        - name: workdir
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.existingClaim }}{{ .Values.persistence.existingClaim }}{{ else }}{{ include "agent-docs-server.fullname" . }}-workdir{{ end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
@@ -95,5 +130,3 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
-
-

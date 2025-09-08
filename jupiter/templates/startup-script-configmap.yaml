@@ -1,0 +1,44 @@
+{{- if .Values.jupiter.solanaCredentials.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "jupiter-chart.fullname" . }}-startup-script
+  labels:
+    {{- include "jupiter-chart.labels" . | nindent 4 }}
+data:
+  startup.sh: |
+    #!/bin/bash
+    set -e
+    
+    # Extract values from environment variables (vendor expects these names)
+    X_TOKEN="${X_TOKEN}"
+    GEYSER_ENDPOINT="${GEYSER_ENDPOINT}"
+    SOLANA_RPC_ENDPOINT="${SOLANA_RPC_ENDPOINT}"
+    
+    # Validate required environment variables
+    if [ -z "$X_TOKEN" ]; then
+      echo "ERROR: X_TOKEN environment variable is required"
+      exit 1
+    fi
+    
+    if [ -z "$GEYSER_ENDPOINT" ]; then
+      echo "ERROR: GEYSER_ENDPOINT environment variable is required"
+      exit 1
+    fi
+    
+    if [ -z "$SOLANA_RPC_ENDPOINT" ]; then
+      echo "ERROR: SOLANA_RPC_ENDPOINT environment variable is required"
+      exit 1
+    fi
+    
+    echo "Starting Jupiter Swap API with:"
+    echo "  X_TOKEN: $X_TOKEN"
+    echo "  GEYSER_ENDPOINT: $GEYSER_ENDPOINT"
+    echo "  SOLANA_RPC_ENDPOINT: $SOLANA_RPC_ENDPOINT"
+    
+    # Start Jupiter with the vendor's expected command line arguments
+    exec ./jupiter-swap-api \
+      --rpc-url "$SOLANA_RPC_ENDPOINT" \
+      --yellowstone-grpc-endpoint "$GEYSER_ENDPOINT" \
+      --yellowstone-grpc-x-token "$X_TOKEN"
+{{- end }}

@@ -1,0 +1,63 @@
+# Values file for Jupiter with Solana GRPC external secrets
+# This configuration uses the external secrets we created for Solana credentials
+
+# Image configuration - you need to build your own image
+image:
+  repository: "ghcr.io/5dlabs/jupiter-swap-api"
+  tag: "v6.0.62"
+  pullPolicy: Always
+
+# Enable ingress for external access
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/group.name: alb-public
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/healthcheck-path: /v6/health
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '10'
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=20
+
+  hosts:
+    - host: jupiter-api.5dlabs.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: jupiter-api-tls
+      hosts:
+        - jupiter-api.5dlabs.com
+
+# Resource configuration for production
+resources:
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+
+# Enable autoscaling
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 70
+
+# Environment variables
+env:
+  RUST_LOG: "info"
+
+# Jupiter-specific configuration with external secrets
+jupiter:
+  # Enable external secrets for Solana credentials
+  solanaCredentials:
+    enabled: true
+    secretName: "jupiter-solana-credentials"
+  
+  # RPC endpoint for Solana (fallback if not using external secrets)
+  rpcEndpoint: "https://api.mainnet-beta.solana.com"
+  # Enable debug mode
+  debug: false

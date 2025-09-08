@@ -57,6 +57,10 @@ worker:
     REDIS_PASSWORD: "workerpass"
     # Use PVC for temporary files instead of read-only /tmp
     TMPDIR: "/work"
+    # Claude configuration directory in PVC
+    CLAUDE_CONFIG_DIR: "/work/claude-code-config"
+  # Worker command to set up directories and start job worker
+  command: ["sh", "-c", "mkdir -p /work/claude-code-config && chown -R $(id -u):$(id -g) /work/claude-code-config && exec /app/job_worker"]
   nodeSelector:
     kubernetes.io/hostname: talos-a43-ee1
   tolerations: []

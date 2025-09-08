@@ -65,6 +65,10 @@ spec:
               value: {{ .Values.env.PORT | quote }}
             - name: MCP_HOST
               value: {{ .Values.env.MCP_HOST | quote }}
+            {{- if .Values.queue.enabled }}
+            - name: REDIS_URL
+              value: {{ .Values.queue.redisUrl | quote }}
+            {{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           readinessProbe:

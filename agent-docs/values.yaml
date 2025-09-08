@@ -24,6 +24,11 @@ env:
   PORT: "3001"
   MCP_HOST: "0.0.0.0"
 
+# Redis configuration for job queue
+queue:
+  enabled: true
+  redisUrl: "redis://redis.databases.svc.cluster.local:6379"
+
 # If set, chart will read env via secretKeyRef instead of plain values
 secret:
   existingSecret: ""

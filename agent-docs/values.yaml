@@ -25,7 +25,7 @@ env:
   PORT: "3001"
   MCP_HOST: "0.0.0.0"
   # Writable working directory for ingestion temp files
-  INGEST_WORK_DIR: "/tmp"
+  INGEST_WORK_DIR: "/work"
   # Claude binary read timeout in seconds (first line)
   CLAUDE_TIMEOUT_SECS: "180"
 
@@ -55,6 +55,8 @@ worker:
     # Redis authentication
     REDIS_USERNAME: "worker"
     REDIS_PASSWORD: "workerpass"
+    # Use PVC for temporary files instead of read-only /tmp
+    TMPDIR: "/work"
   nodeSelector:
     kubernetes.io/hostname: talos-a43-ee1
   tolerations: []
@@ -73,10 +75,6 @@ persistence:
     - ReadWriteOnce
   annotations: {}
 
-# Redis configuration for job queue
-queue:
-  enabled: true
-  redisUrl: "redis://redis.databases.svc.cluster.local:6379"
 
 # If set, chart will read env via secretKeyRef instead of plain values
 secret:

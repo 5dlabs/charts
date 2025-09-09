@@ -74,6 +74,9 @@ spec:
               value: {{ .Values.env.PORT | quote }}
             - name: MCP_HOST
               value: {{ .Values.env.MCP_HOST | quote }}
+            # Enable GET /mcp (SSE) for Cursor/IDE MCP clients when set to "1" or "true"
+            - name: MCP_ENABLE_SSE
+              value: {{ .Values.env.MCP_ENABLE_SSE | quote }}
             - name: CLAUDE_TIMEOUT_SECS
               value: {{ .Values.env.CLAUDE_TIMEOUT_SECS | quote }}
             - name: INGEST_WORK_DIR

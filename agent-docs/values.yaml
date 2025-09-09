@@ -27,7 +27,7 @@ env:
   MCP_HOST: "0.0.0.0"
   # Gate SSE (GET /mcp) behind an env flag to keep tests green by default.
   # Set to "1" or "true" to enable Cursor/IDE MCP clients which use SSE.
-  MCP_ENABLE_SSE: "0"
+  MCP_ENABLE_SSE: "true"
   # Writable working directory for ingestion temp files
   INGEST_WORK_DIR: "/work"
   # Claude binary read timeout in seconds (first line)
